@@ -8,7 +8,10 @@ import gradio as gr
 from gradio.themes.base import Base
 from keybert import KeyBERT, KeyLLM
 from sentence_transformers import SentenceTransformer
-import llmware
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import json
+import textwrap
 #from llmware import store_verified_response
 import key_param
 
@@ -107,7 +110,9 @@ def query_data(query,input_year):
     top_score = docs[0][1]
     source = docs[0][0].metadata['source']
 
-    sources = "\n".join([doc[0].metadata['source'] + f" (score: {doc[1]})" for doc in docs if doc[1] >= top_score-0.02])
+    source_list = [doc[0].metadata['source'] for doc in docs if doc[1] >= top_score-0.03]
+    source_dicts = [{'link': doc[0].metadata['source'], 'score': doc[1]} for doc in docs if doc[1] >= top_score-0.03]
+    sources = "\n".join([doc[0].metadata['source'] + f" (score: {doc[1]})" for doc in docs if doc[1] >= top_score-0.03])
 
     # Leveraging Atlas Vector Search paired with Langchain's QARetriever
 
@@ -138,8 +143,76 @@ def query_data(query,input_year):
     # Store the verified response and citations
     #store_verified_response(retriever_output, evidence_sources)
 
+    download_as_json(query, retriever_output, source_dicts, keywords)
+    print(source_list, keywords)
+    download_as_pdf(query, retriever_output, source_list, keywords)
+
     # Return Atlas Vector Search output, and output generated using RAG Architecture
     return as_output, retriever_output, sources, keywords
+
+# Define functions for handling download actions
+def download_as_pdf(query, summary_output, sources, keywords):
+    # Create a new PDF file
+    print("----------------------------")
+    print(sources)
+    print(keywords)
+    print(', '.join([kw[0] for kw in keywords]))
+    filename = "output.pdf"
+    c = canvas.Canvas(filename, pagesize=letter)
+
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(100, 700, "Query:")
+
+
+    # Set font properties for titles
+    c.setFont("Helvetica", 12)
+    c.drawString(100, 680, query)
+
+    # Add titles
+    c.drawString(100, 650, "Summary Output:")
+    
+    
+
+    # Add content (replace with your actual data)
+    c.setFont("Helvetica", 12)
+
+    max_line_length = 75
+    y = 630
+    summary_output_wrapped = textwrap.wrap(summary_output, width=max_line_length)
+    print(summary_output_wrapped)
+    for line in summary_output_wrapped:
+        c.drawString(100, y, line)
+        y -= 20
+
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(100, y-10, "Sources:")
+    c.setFont("Helvetica", 12)
+    y -=30
+    for source in sources:
+        c.drawString(100, y, source)
+        y -= 20
+
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(100, y-10, "Keywords:")
+    c.setFont("Helvetica", 12)
+    c.drawString(100, y-30, ', '.join([kw[0] for kw in keywords]) + ".")
+
+    # Save the PDF
+    c.save()
+
+    print(f"PDF saved to {filename}")
+
+def download_as_json(query, retriever_output, sources, keywords):
+    data = {
+    "query": query,
+    "summary_output": retriever_output,
+    "sources": sources,
+    "keywords": keywords
+    }
+    filename = "output.json"
+    with open(filename, "w") as json_file:
+        json.dump(data, json_file, indent=4)
+    return
 
 # Create a web interface for the app, using Gradio
 
@@ -189,6 +262,10 @@ with gr.Blocks() as app:
     keywords_button.click(extract_keywords, inputs=[text_input, year_select], outputs=keywords_output)
     history_button.click(extract_history, inputs=[text_input, year_select], outputs=history_output)
     opinion_button.click(opinion_scale, inputs=[text_input, opinion_input])
+     with gr.Row():
+        u = gr.UploadButton("Upload a file", file_count="single", visible=False)
+        download_pdf_button = gr.DownloadButton("Download as PDF", variant="primary", value="output.pdf")
+        download_json_button = gr.DownloadButton("Download as JSON", variant="primary", value="output.json")
 app.launch()
 
 

@@ -1,0 +1,40 @@
+{
+    "query": "How did Aegean REBIRTH collaborate with NOVA?",
+    "summary_output": " Aegean REBIRTH collaborated with NOVA by organizing a joint volunteer action for underwater and coastal cleanups in Amorgos, with the goal of protecting the island's marine environment.",
+    "sources": [
+        {
+            "link": "sample_files\\nova_17_10_2023.txt",
+            "score": 0.9241303205490112
+        },
+        {
+            "link": "sample_files\\nova_17_05_2023.txt",
+            "score": 0.8964334726333618
+        },
+        {
+            "link": "sample_files\\nova_29_09_2023.txt",
+            "score": 0.8948845863342285
+        }
+    ],
+    "keywords": [
+        [
+            "amorgos",
+            0.457
+        ],
+        [
+            "aegean",
+            0.4456
+        ],
+        [
+            "nova",
+            0.4387
+        ],
+        [
+            "coastal",
+            0.4023
+        ],
+        [
+            "marine",
+            0.3702
+        ]
+    ]
+}
