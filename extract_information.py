@@ -20,6 +20,7 @@ dbName = "langchain_demo"
 collectionName = "collection_of_text_blobs"
 collection = client[dbName][collectionName]
 
+
 # Define the text embedding model
  
 embeddings = OpenAIEmbeddings(openai_api_key=key_param.openai_api_key)
@@ -37,12 +38,19 @@ def extract_keywords(document_content):
 
     return keywords
 
-def query_data(query):
+def query_data(query,input_year):
     # Convert question to vector using OpenAI embeddings
     # Perform Atlas Vector Search using Langchain's vectorStore
     # similarity_search returns MongoDB documents most similar to the query    
-
+    print(input_year)
+    
+    #gia ta xronia thelei na mpoun san metadata
+    #filtered_documents = [doc for doc in vectorStore if doc.metadata.get('year') >= input_year]
+    #docs = vectorStore.similarity_search_with_score(query, k=10,docs=filtered_documents)
+    
     docs = vectorStore.similarity_search_with_score(query, k=10)
+    docs = [doc for doc in docs if doc[0].metadata.get('date') >= int(input_year)]
+    print(docs[0])
     print(docs[0][0], docs[0][1]) # Document, Score
 
     as_output = docs[0][0].page_content
@@ -66,7 +74,7 @@ def query_data(query):
     # Get VectorStoreRetriever: Specifically, Retriever for MongoDB VectorStore.
     # Implements _get_relevant_documents which retrieves documents relevant to a query.
     retriever = vectorStore.as_retriever(
-        search_kwargs={'k': 2}
+        search_kwargs={'k': 2,'filter': {'metadata.date': {'$gte': int(input_year)}}}
     )
 
     # Load "stuff" documents chain. Stuff documents chain takes a list of documents,
@@ -161,6 +169,7 @@ with gr.Blocks(theme=Base(), title="Summarizing + Question Answering App using V
         """
         # Question Answering App using Atlas Vector Search + RAG Architecture
         """)
+    year_select = gr.Dropdown(choices=[str(year) for year in range(2015, 2026)], label="Choose a Year")
     textbox = gr.Textbox(label="Enter your Question:")
     with gr.Row():
         button = gr.Button("Submit", variant="primary")
@@ -181,7 +190,6 @@ with gr.Blocks(theme=Base(), title="Summarizing + Question Answering App using V
 
 # Call query_data function upon clicking the Submit button
 
-
-
+    button.click(query_data, inputs=[textbox, year_select], outputs=[output1, output2, sources, keywords])
 
 demo.launch()
