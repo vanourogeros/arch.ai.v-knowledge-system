@@ -1,5 +1,7 @@
 # arch.ai.v-knowledge-system
 
+UniAI Makeathon - 19-21 April 2024
+
 ## Authors
 - Theodoros Papadopoulos   [paptheop01](https://github.com/paptheop01)
 - Chrysa Pratikaki         [cpratikaki](https://github.com/cpratikaki)
@@ -7,8 +9,11 @@
 - Eirini - Maria TZermpou  [IriniTzerbou](https://github.com/IriniTzerbou)
 
 ## Objective
-This project aims to implement a kwnoledge management system using an Atlas Vector Search with Retrieval-Augmented Generation (RAG) architecture.
-They use the LangChain framework, OpenAI models, as well as Gradio in conjunction with Atlas Vector Search in a RAG architecture.
+
+NOVA Challenge - Team MM1
+
+This project aims to implement a knowledge management system using an Atlas Vector Search with Retrieval-Augmented Generation (RAG) architecture.
+We used the LangChain framework, OpenAI models, as well as Gradio in conjunction with Atlas Vector Search to effectivelly implement an information retrieval and keyword matching application.
 
 Specify your MongoDB uri and OpenAI API key inside the main script:
 
