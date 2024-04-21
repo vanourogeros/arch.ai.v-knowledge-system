@@ -38,14 +38,14 @@ def extract_keywords(query,input_year):
 
     return keywords
 
-# def extract_keywords(document_content):
-#     # Initialize KeyBERT
-#     kw_model = KeyBERT()
+def extract_keywords2(document_content):
+    # Initialize KeyBERT
+    kw_model = KeyBERT()
 
-#     # Extract keywords
-#     keywords = kw_model.extract_keywords(document_content, stop_words=None)
+    # Extract keywords
+    keywords = kw_model.extract_keywords(document_content, stop_words=None)
 
-#     return keywords
+    return keywords
 
 def extract_summary(query,input_year):
     llm = OpenAI(openai_api_key=key_param.openai_api_key, temperature=0)
@@ -138,7 +138,7 @@ def query_data(query,input_year):
 
     retriever_output = qa.run(query)
 
-    keywords = extract_keywords(retriever_output)
+    keywords = extract_keywords2(retriever_output)
     print("Extracted Keywords:", keywords)
     # Store the verified response and citations
     #store_verified_response(retriever_output, evidence_sources)
@@ -253,6 +253,7 @@ with gr.Blocks() as app:
         keywords_button = gr.Button("Extract Keywords")
         history_button = gr.Button("Extract History")
         opinion_button = gr.Button("Submit Opinion")
+        report_button = gr.Button("Create Report")
 
     summary_output = gr.Textbox(label="Summary Output", lines=4, placeholder="Summary will appear here...")
     keywords_output = gr.Textbox(label="Keywords Output", lines=2, placeholder="Keywords will appear here...")
@@ -262,10 +263,11 @@ with gr.Blocks() as app:
     keywords_button.click(extract_keywords, inputs=[text_input, year_select], outputs=keywords_output)
     history_button.click(extract_history, inputs=[text_input, year_select], outputs=history_output)
     opinion_button.click(opinion_scale, inputs=[text_input, opinion_input])
-     with gr.Row():
+    report_button.click(query_data, inputs=[text_input,year_select])
+    with gr.Row():
         u = gr.UploadButton("Upload a file", file_count="single", visible=False)
-        download_pdf_button = gr.DownloadButton("Download as PDF", variant="primary", value="output.pdf")
-        download_json_button = gr.DownloadButton("Download as JSON", variant="primary", value="output.json")
+        download_pdf_button = gr.DownloadButton("Download Report as PDF", variant="primary", value="output.pdf")
+        download_json_button = gr.DownloadButton("Download Report as JSON", variant="primary", value="output.json")
 app.launch()
 
 
