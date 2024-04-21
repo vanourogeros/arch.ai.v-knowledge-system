@@ -6,7 +6,7 @@ UniAI Makeathon - 19-21 April 2024
 - Theodoros Papadopoulos   [paptheop01](https://github.com/paptheop01)
 - Chrysa Pratikaki         [cpratikaki](https://github.com/cpratikaki)
 - Ioannis Protogeros       [vanourogeros](https://github.com/vanourogeros)
-- Eirini - Maria TZermpou  [IriniTzerbou](https://github.com/IriniTzerbou)
+- Eirini - Maria Tzermpou  [IriniTzerbou](https://github.com/IriniTzerbou)
 
 ## Objective
 
